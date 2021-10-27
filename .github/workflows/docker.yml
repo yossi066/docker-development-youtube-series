@@ -10,19 +10,41 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    
     - uses: actions/checkout@v2
+
+    - name:  'Automated Version Bump'
+      uses:  'phips28/gh-action-bump-version@master'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        push: false
+    
     - name: docker login
       env:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}   
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}  
       run: |
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+        
     - name: docker build nodejs
       run: |
-        docker build ./nodejs -t yossi066/nodejs:1.0.0
+        docker build ./nodejs -t yossi066/nodejs:{{version}}
+        
     - name: docker push
       run: |
-        docker push yossi066/nodejs:1.0.0
+        docker push yossi066/nodejs:{{version}}
+        
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'yossi066/nodejs:{{version}}'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'    
+          
     - name:  'Automated Version Bump'
       uses:  'phips28/gh-action-bump-version@master'
       env:
