@@ -23,3 +23,9 @@ jobs:
     - name: docker push
       run: |
         docker push yossi066/nodejs:1.0.0
+    - name:  'Automated Version Bump'
+      uses:  'phips28/gh-action-bump-version@master'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        commit-message: 'CI: bumps version to {{version}} [skip ci]'
