@@ -29,16 +29,16 @@ jobs:
         
     - name: docker build nodejs
       run: |
-        docker build ./nodejs -t yossi066/nodejs:{{version}}
+        docker build ./nodejs -t yossi066/nodejs:0.0.1
         
     - name: docker push
       run: |
-        docker push yossi066/nodejs:{{version}}
+        docker push yossi066/nodejs:0.0.1
         
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: 'yossi066/nodejs:{{version}}'
+        image-ref: 'yossi066/nodejs:0.0.1'
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
